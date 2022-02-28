@@ -1,0 +1,26 @@
+[package]
+name = "esp-fs-tests"
+version = "0.1.0"
+authors = ["Scott Mabin <scott@mabez.dev>"]
+edition = "2018"
+resolver = "2"
+
+[profile.release]
+opt-level = "s"
+
+[profile.dev]
+debug = true # Symbols are nice and they don't increase the size on Flash
+opt-level = "z"
+
+[features]
+default = ["native"]
+native = ["esp-idf-sys/native"]
+
+[dependencies]
+esp-idf-sys = { version = "0.30.6", features = ["binstart"] }
+c_str_macro = "1.0.3"
+
+
+[build-dependencies]
+embuild = "0.28"
+anyhow = "1"
