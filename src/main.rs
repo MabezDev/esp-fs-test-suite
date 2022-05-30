@@ -3,7 +3,7 @@ use c_str_macro::c_str;
 use std::{ffi::CStr, fs::File};
 
 fn main() {
-    std::thread::sleep(std::time::Duration::from_secs(1));
+    std::thread::sleep(std::time::Duration::from_secs(5));
     esp_idf_sys::link_patches();
     esp_idf_svc::log::EspLogger::initialize_default();
 
@@ -14,6 +14,7 @@ fn main() {
 
     test_read_to_string();
     test_meta_data();
+    test_create_from_path();
 
     println!("Testing complete!");
 }
@@ -31,6 +32,26 @@ fn test_read_to_string() {
 
     println!("String is: {:?}", str);
     assert_eq!("hello", str);
+}
+
+fn test_create_from_path() {
+    println!("test_create_from_path: running");
+    let path = std::path::Path::new("/storage/foobar");
+
+    std::fs::File::create(path).unwrap();
+
+    match std::fs::read_dir("/storage") {
+        Ok(dir) => {
+            for entry in dir {
+                println!("{entry:?}");
+            }
+        }
+        Err(err) => println!("Failed to read root: {err}"),
+    }
+
+    if let Err(err) = std::fs::remove_file(path) {
+        println!("Failed to remove file: {err}");
+    }
 }
 
 fn init_partition(path: &CStr, label: &CStr, max_files: u32) {
